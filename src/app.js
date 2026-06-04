@@ -1,0 +1,42 @@
+import express from 'express'
+import cors from 'cors';
+import cookieParser from 'cookie-parser'
+
+const app=express();
+const allowedOriginsString = process.env.CORS_ORIGIN;
+const allowedOrigins = allowedOriginsString ? allowedOriginsString.split(',').map(s => s.trim()) : [];
+
+// app.use(cors({
+//     origin:process.env.CORS_ORIGIN,
+//     credentials:true
+// }))
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+app.use(express.json(
+    {
+        limit:"16kb"
+    }
+))
+app.use(express.urlencoded({extended:true,limit:'16kb'}))
+app.use(express.static("public"))
+app.use(cookieParser())
+
+import authRouter from './routes/auth.routes.js';
+import llmRouter from './routes/llmEngine.routes.js';
+import chatRouter from './routes/chat.routes.js';
+import userRouter from './routes/users.routes.js';
+app.use("/api/v1/auth",authRouter)
+app.use("/api/v1/llmEngine",llmRouter);
+app.use("/api/v1/chat",chatRouter);
+app.use("/api/v1/users",userRouter);
+
+export {app};
