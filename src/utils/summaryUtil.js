@@ -1,4 +1,4 @@
-import { openrouter } from "./openrouter.js";
+import { openrouter } from "./openRouter.js";
 
 function safeParseJSON(raw) {
     const start = raw.indexOf("{");

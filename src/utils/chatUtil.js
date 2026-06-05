@@ -1,4 +1,4 @@
-import { openrouter } from "./openrouter.js";
+import { openrouter } from "./openRouter.js";
 
 export const generateChatResponse = async (userMessage, relevantChunks, chatHistory) => {
 
