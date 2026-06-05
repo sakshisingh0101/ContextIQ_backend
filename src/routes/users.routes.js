@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import { getProfile,changepassword,deleteAllDocuments,deleteDocumentById,updateProfile } from '../controllers/users.controller.js';
-import { deleteModel } from 'mongoose';
+
 import { verifyJwtAccessToken } from '../middlewares/auth.middleware.js';
 
 const userRouter=Router();
