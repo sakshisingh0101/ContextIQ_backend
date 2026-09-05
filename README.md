@@ -1,45 +1,108 @@
 # ContextIQ Backend
 
-AI-powered document and meeting intelligence platform that transforms PDFs, notes, and transcripts into structured insights using hierarchical summarization, semantic search, and Retrieval-Augmented Generation (RAG).
+AI-powered document intelligence backend that enables document upload, text extraction, hierarchical summarization, semantic retrieval, and Retrieval-Augmented Generation (RAG) for contextual question answering.
+
+## Live Links
+
+### Frontend
+
+https://context-iq-frontend.vercel.app/
+
+### Backend API
+
+https://contextiq-backend-zcck.onrender.com
+
+---
 
 ## Features
 
-* User Authentication (JWT + Refresh Tokens)
-* Email OTP Verification
-* PDF and Text Document Upload
-* Text Extraction from Uploaded Files
-* Hierarchical AI Summarization
-* Semantic Search with Vector Embeddings
-* Retrieval-Augmented Generation (RAG)
-* Context-Aware Question Answering
-* PostgreSQL + pgvector Integration
-* Redis-based OTP Storage
-* Cloudinary File Storage
+### Authentication & Security
 
-## Architecture
+* JWT Authentication
+* Refresh Token Rotation
+* Email OTP Verification
+* Secure HTTP-only Cookies
+* Redis-based OTP Storage
+* Session Management
+
+### Document Processing
+
+* PDF Upload Support
+* Raw Text Input Support
+* Text Extraction Pipeline
+* Cloudinary File Storage
+* Recursive Text Chunking
+* Document Metadata Management
+
+### AI & RAG
+
+* Hierarchical Summarization
+* Chunk-Level Summaries
+* Final Document Summary Generation
+* Hugging Face Embeddings
+* pgvector Vector Storage
+* Semantic Similarity Search
+* Retrieval-Augmented Generation (RAG)
+* Context-Aware Follow-up Questions
+* Multi-turn Conversation Support
+
+### Database
+
+* PostgreSQL (Supabase)
+* pgvector Extension
+* Conversation Persistence
+* Message History Storage
+* Vector Search Indexing
+
+---
+
+## System Architecture
 
 ```text
-Document Upload
-      │
-      ▼
+User Uploads Document
+        │
+        ▼
 Text Extraction
-      │
-      ▼
-Chunking
-      │
- ┌────┴────┐
- ▼         ▼
-Embeddings  Chunk Summaries
- ▼         ▼
-pgvector   Combined Summary
- │         ▼
- │     Final Summary
- ▼
-Semantic Retrieval
-      │
-      ▼
-Question Answering
+        │
+        ▼
+Recursive Chunking
+        │
+ ┌──────┴────────┐
+ ▼               ▼
+Embeddings    Chunk Summaries
+ ▼               ▼
+pgvector     Combined Context
+ │               │
+ └──────┬────────┘
+        ▼
+ Final Summary
+        │
+        ▼
+ Database Storage
+        │
+        ▼
+ User Question
+        │
+        ▼
+ Question Embedding
+        │
+        ▼
+ Semantic Retrieval
+        │
+        ▼
+ Chat History Retrieval
+        │
+        ▼
+ Context + History + Question
+        │
+        ▼
+ OpenRouter LLM
+        │
+        ▼
+ AI Response
 ```
+
+---
 
 ## Tech Stack
 
@@ -50,42 +113,54 @@ Question Answering
 
 ### Database
 
-* PostgreSQL
+* PostgreSQL (Supabase)
 * pgvector
 
 ### Authentication
 
 * JWT
 * Refresh Tokens
-* Redis OTP Verification
+* Redis (Upstash)
 
-### AI & RAG
+### AI Layer
 
 * OpenRouter
 * Hugging Face Embeddings
-* LangChain Text Splitters
+* LangChain Recursive Character Text Splitter
 
 ### Storage
 
 * Cloudinary
 
+---
+
 ## Database Schema
 
 ### Users
 
-Stores user account information.
+Stores user information and authentication data.
 
 ### Refresh Tokens
 
-Maintains secure login sessions.
+Stores active login sessions and refresh token hashes.
 
 ### Documents
 
-Stores uploaded document metadata, extracted text, and generated summaries.
+Stores uploaded document metadata, extracted text, summaries, and processing status.
 
 ### Document Chunks
 
-Stores text chunks and vector embeddings for semantic retrieval.
+Stores chunked text along with vector embeddings for semantic retrieval.
+
+### Conversations
+
+Stores document-specific chat sessions.
+
+### Messages
+
+Stores user and assistant messages used for follow-up conversations.
+
+---
 
 ## API Modules
 
@@ -93,8 +168,8 @@ Stores text chunks and vector embeddings for semantic retrieval.
 
 * Register User
 * Verify Email OTP
-* Login
-* Logout
+* Login User
+* Logout User
 * Refresh Access Token
 
 ### Documents
@@ -102,13 +177,17 @@ Stores text chunks and vector embeddings for semantic retrieval.
 * Upload Document
 * Extract Text
 * Generate Summary
-* Store Embeddings
+* Chunk Processing
+* Embedding Generation
 
 ### AI Engine
 
 * Semantic Retrieval
-* Context-Aware Q&A
-* RAG Pipeline
+* Follow-up Questions
+* Chat History Retrieval
+* RAG-based Question Answering
+
+---
 
 ## Project Structure
 
@@ -121,15 +200,18 @@ src
 ├── utils
 ├── services
 ├── constants
-└── app.js
+├── app.js
+└── index.js
 ```
+
+---
 
 ## Environment Variables
 
 ```env
 PORT=
 
-POSTGRES_URL=
+SUPABASE_DATABASE_URL=
 
 REDIS_URL=
 
@@ -145,29 +227,40 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 ```
 
-## Setup
+---
+
+## Installation
 
 ```bash
-git clone <repo-url>
+git clone = https://github.com/sakshisingh0101/ContextIQ_backend.git
+
+cd ContextIQ_backend
 
 npm install
 
 npm run dev
 ```
 
+---
+
 ## Future Improvements
 
-* Meeting Action Item Extraction
-* Conversation History Memory
-* Hybrid Search (Keyword + Vector)
-* Multi-Document Chat
-* Async Background Processing
+* Hybrid Search (Keyword + Vector Search)
+* Streaming Responses
+* Multi-Document Conversations
+* Background Job Queue Processing
+* Citation-Based Answers
 * MCP Integration
 * Docker Deployment
+* Team Workspaces
 
-## Status
+---
 
-🚧 Currently under active development.
+## Author
 
-```
-```
+Sakshi Singh
+
+DTU Engineering Student
+
+Built using Node.js, PostgreSQL, pgvector, Redis, LangChain, OpenRouter, Hugging Face Embeddings, and Cloudinary.
+
