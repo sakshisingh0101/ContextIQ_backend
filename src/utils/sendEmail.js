@@ -96,22 +96,26 @@
 // export default sendEmail;
 
 
-import * as Brevo from "@getbrevo/brevo";
+import * as brevo from "@getbrevo/brevo";
 import dotenv from "dotenv";
 dotenv.config();
 
-const apiInstance = new Brevo.TransactionalEmailsApi();
-apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+let defaultClient = brevo.ApiClient.instance;
+let apiKey = defaultClient.authentications["api-key"];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+
+const apiInstance = new brevo.TransactionalEmailsApi();
 
 const sendEmail = async (to, subject, html) => {
   try {
-    const response = await apiInstance.sendTransacEmail({
-      sender: { name: "ContextIQ", email: process.env.BREVO_SENDER_EMAIL }, // teri verified Gmail
-      to: [{ email: to }],
-      subject,
-      htmlContent: html
-    });
-    console.log("Email sent:", response.body.messageId);
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = html;
+    sendSmtpEmail.sender = { name: "ContextIQ", email: process.env.BREVO_SENDER_EMAIL };
+    sendSmtpEmail.to = [{ email: to }];
+
+    const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log("Email sent:", response);
     return response;
   } catch (error) {
     console.log("Email Error:", error);
