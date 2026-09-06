@@ -96,7 +96,7 @@
 // export default sendEmail;
 
 
-import Brevo from "@getbrevo/brevo";
+import * as Brevo from "@getbrevo/brevo";
 import dotenv from "dotenv";
 dotenv.config();
 
