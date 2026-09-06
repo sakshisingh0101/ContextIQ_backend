@@ -96,27 +96,64 @@
 // export default sendEmail;
 
 
-import * as brevo from "@getbrevo/brevo";
+// import * as brevo from "@getbrevo/brevo";
+// import dotenv from "dotenv";
+// dotenv.config();
+
+// let defaultClient = brevo.ApiClient.instance;
+// let apiKey = defaultClient.authentications["api-key"];
+// apiKey.apiKey = process.env.BREVO_API_KEY;
+
+// const apiInstance = new brevo.TransactionalEmailsApi();
+
+// const sendEmail = async (to, subject, html) => {
+//   try {
+//     const sendSmtpEmail = new brevo.SendSmtpEmail();
+//     sendSmtpEmail.subject = subject;
+//     sendSmtpEmail.htmlContent = html;
+//     sendSmtpEmail.sender = { name: "ContextIQ", email: process.env.BREVO_SENDER_EMAIL };
+//     sendSmtpEmail.to = [{ email: to }];
+
+//     const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
+//     console.log("Email sent:", response);
+//     return response;
+//   } catch (error) {
+//     console.log("Email Error:", error);
+//     return null;
+//   }
+// };
+
+// export default sendEmail;
+
 import dotenv from "dotenv";
 dotenv.config();
 
-let defaultClient = brevo.ApiClient.instance;
-let apiKey = defaultClient.authentications["api-key"];
-apiKey.apiKey = process.env.BREVO_API_KEY;
-
-const apiInstance = new brevo.TransactionalEmailsApi();
-
 const sendEmail = async (to, subject, html) => {
   try {
-    const sendSmtpEmail = new brevo.SendSmtpEmail();
-    sendSmtpEmail.subject = subject;
-    sendSmtpEmail.htmlContent = html;
-    sendSmtpEmail.sender = { name: "ContextIQ", email: process.env.BREVO_SENDER_EMAIL };
-    sendSmtpEmail.to = [{ email: to }];
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "api-key": process.env.BREVO_API_KEY
+      },
+      body: JSON.stringify({
+        sender: { name: "ContextIQ", email: process.env.BREVO_SENDER_EMAIL },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html
+      })
+    });
 
-    const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    console.log("Email sent:", response);
-    return response;
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.log("Email Error:", data);
+      return null;
+    }
+
+    console.log("Email sent:", data);
+    return data;
   } catch (error) {
     console.log("Email Error:", error);
     return null;
