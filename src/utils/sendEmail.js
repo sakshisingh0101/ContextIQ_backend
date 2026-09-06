@@ -65,28 +65,54 @@
 
 // export default sendEmail;
 
-import { Resend } from "resend";
+// import { Resend } from "resend";
+// import dotenv from "dotenv";
+// dotenv.config();
+
+// const resend = new Resend(process.env.RESEND_API_KEY);
+
+// const sendEmail = async (to, subject, html) => {
+//   try {
+//     const { data, error } = await resend.emails.send({
+//       from: "ContextIQ <onboarding@resend.dev>",
+//       to,
+//       subject,
+//       html
+//     });
+
+//     if (error) {
+//       console.log("Email Error:", error);
+//       return null;
+//     }
+
+//     console.log("Email sent:", data.id);
+//     return data;
+//   } catch (error) {
+//     console.log("Email Error:", error);
+//     return null;
+//   }
+// };
+
+// export default sendEmail;
+
+
+import Brevo from "@getbrevo/brevo";
 import dotenv from "dotenv";
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const apiInstance = new Brevo.TransactionalEmailsApi();
+apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
 const sendEmail = async (to, subject, html) => {
   try {
-    const { data, error } = await resend.emails.send({
-      from: "ContextIQ <onboarding@resend.dev>",
-      to,
+    const response = await apiInstance.sendTransacEmail({
+      sender: { name: "ContextIQ", email: process.env.BREVO_SENDER_EMAIL }, // teri verified Gmail
+      to: [{ email: to }],
       subject,
-      html
+      htmlContent: html
     });
-
-    if (error) {
-      console.log("Email Error:", error);
-      return null;
-    }
-
-    console.log("Email sent:", data.id);
-    return data;
+    console.log("Email sent:", response.body.messageId);
+    return response;
   } catch (error) {
     console.log("Email Error:", error);
     return null;
